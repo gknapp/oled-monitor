@@ -31,39 +31,54 @@ parser.add_argument(
     help="I2C port, ls /dev/i2c-* to see what ports exist"
 )
 parser.add_argument(
-    "-q", "--quiet", nargs="?", default=None, help="Quiet mode"
+    "-tf", action="store_true",
+    help="Use Fahrenheit temperature prefix (F). Default is Celsuis (C)"
+)
+parser.add_argument(
+    "-q", action="store_true", help="Quiet mode"
 )
 args = parser.parse_args()
 
-# TODO: fuzzing
+# TODO: fuzzing and swapping
+
+DEG = u'\N{DEGREE SIGN}'
+SCALE = "F" if args.tf else "C"
+
+def thermals(text, offset):
+    y = 29 + offset
+    text.write((2, y), "{}{}: {}".format(
+        DEG, SCALE, shell.cpu_temp(), shell.ram_temp()
+    ))
+    text.write((43, y), "/")
+    text.write((49, y), shell.ram_temp())
+    text.write((77, y), "CPU")
+    text.write((98, y), "/")
+    text.write((105, y), "RAM")
 
 def display_stats(device):
     with canvas(device) as draw:
         text = screen.get_text(draw)
+        gauge = screen.get_gauge(draw, text)
+        mdns = shell.mdns_enabled()
+        
+        if (mdns):
+            text.bold((1, 1), str(shell.hostname() + ".local").upper())
+            text.write((3, 18), "IP: " + shell.ipaddr())
+        else:
+            text.bold((1, 1), "IP: " + shell.ipaddr())
+        
+        offset = 0 if mdns else -6
+        thermals(text, offset) # CPU / RAM temperature
+        gauge((1, 41 + offset), "CPU", shell.cpu_usage())
+        gauge((1, 53 + offset), "RAM", shell.ram_usage())
 
-        if (shell.mdns_enabled()):
-            text.large((2, 0), str(shell.hostname()).lower() + ".local")
-
-        text.write((2, 17), "IP: " + shell.ipaddr())
-
-        cpu_usage = shell.cpu_usage()
-        screen.bar_gauge(draw, (22, 29, 97, 37), cpu_usage)
-        text.small((2, 27), "CPU")
-        text.small((100, 27), str(round(cpu_usage, 1)) + "%")
-
-        ram_usage = shell.ram_usage()
-        screen.bar_gauge(draw, (22, 41, 97, 49), ram_usage)
-        text.small((2, 39), "RAM")
-        text.small((101, 39), str(round(ram_usage, 1)) + "%")
-
-        text.small((1, 52), "TEMP {} / ".format(shell.cpu_temp()))
         time.sleep(1.5)
 
 if __name__ == "__main__":
     try:
         device = screen.get_device(args.sda, args.port)
 
-        if args.quiet is None:
+        if args.q is not True:
             print("Running ...")
 
         while True:

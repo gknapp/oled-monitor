@@ -31,6 +31,9 @@ def cpu_usage():
     return round(_load_avg() / _cpu_cores() * 100, 2)
 
 def cpu_temp(match = "cpu"):
+    return get_temp(match)
+
+def get_temp(match):
     exists, hwmon_file = _hwmon_exists(match)
     if (exists):
         temp_file = hwmon_file.replace("name", "temp1_input")
@@ -49,6 +52,9 @@ def mdns_enabled():
     cmd = "netstat --inet -lu | grep ':mdns' | wc -l"
     mdns = _shellexec(cmd).decode().strip()
     return int(mdns) == 1
+
+def ram_temp(match = "ddr"):
+    return get_temp(match)
 
 def ram_usage():
     cmd = "free -m | awk 'NR==2{printf \"%.2f\", $3/$2*100 }'"
