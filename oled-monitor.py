@@ -51,9 +51,9 @@ def thermals(text, offset):
     ))
     text.write((43, y), "/")
     text.write((49, y), shell.ram_temp())
-    text.write((77, y), "CPU")
-    text.write((98, y), "/")
-    text.write((105, y), "RAM")
+    text.write((76, y), "CPU")
+    text.write((97, y), "/")
+    text.write((104, y), "RAM")
 
 def display_stats(device):
     with canvas(device) as draw:
