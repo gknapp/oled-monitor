@@ -27,8 +27,10 @@ def _inset(pos, px):
     x, y, xmax, ymax = pos
     return (x + px, y + px, xmax - px, ymax - px)
 
-def _textwhite(draw, font):
-    return lambda pos, msg: draw.text(pos, msg, fill="white", font=font)
+def _text(draw, font):
+    def partial(pos, msg, color="white"):
+        draw.text(pos, msg, fill=color, font=font)
+    return partial
 
 # Public functions
 
@@ -54,8 +56,24 @@ def get_gauge(draw, text):
 
 def get_text(draw):
     return dotdict({
-        "bold": _textwhite(draw, bold),
+        "bold": _text(draw, bold),
         # "large": _textwhite(draw, large),
-        "small": _textwhite(draw, small),
-        "write": _textwhite(draw, medium)
+        "small": _text(draw, small),
+        "write": _text(draw, medium)
     })
+
+def updates_notice(draw, text):
+    def backfill_box(x, y, w, h):
+        # rounded corners
+        dia = 5
+        draw.ellipse((x, y, x + dia, y + dia), fill="white") # top left corner
+        draw.ellipse((x, y + dia, x + dia, y + h), fill="white") # bot left corner
+        draw.ellipse((x + w - dia, y, x + w, y + dia), fill="white") # top right corner
+        draw.ellipse((x + w - dia, y + h - dia, x + w, y + h), fill="white") # bot right corner
+        # backfill
+        inset = round(dia / 2)
+        draw.rectangle((x + inset, y, x + w - inset, y + h), fill="white")
+        draw.rectangle((x, y + inset, x + w, y + h - inset), fill="white")
+
+    backfill_box(100, 17, 25, 10)    
+    text.write((104, 18), "UPD!", "black")

@@ -4,6 +4,10 @@ import subprocess
 
 # Helper functions
 
+def _distro_debian():
+    cmd = "grep 'ID=debian' /etc/*release | wc -l"
+    return int(_shellexec(cmd).rstrip())
+
 def _shellexec(cmd):
     return subprocess.check_output(cmd, shell=True)
 
@@ -57,3 +61,10 @@ def ram_temp(match = "ddr"):
 def ram_usage():
     cmd = "free -m | awk 'NR==2{printf \"%.2f\", $3/$2*100 }'"
     return float(_shellexec(cmd))
+
+def updates_available():
+    if (_distro_debian()):
+        debian = "apt list --upgradable 2>/dev/null | wc -l"
+        return int(_shellexec(debian).rstrip()) > 1
+    
+    return False

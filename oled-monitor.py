@@ -60,13 +60,16 @@ def display_stats(device):
         text = screen.get_text(draw)
         gauge = screen.get_gauge(draw, text)
         mdns = shell.mdns_enabled()
-        
+
         if (mdns):
             text.bold((1, 1), str(shell.hostname() + ".local").upper())
             text.write((3, 18), "IP: " + shell.ipaddr())
+            # only room for this with host title
+            if shell.updates_available():
+                screen.updates_notice(draw, text)
         else:
             text.bold((1, 1), "IP: " + shell.ipaddr())
-        
+
         offset = 0 if mdns else -6
         thermals(text, offset) # CPU / RAM temperature
         gauge((1, 41 + offset), "CPU", shell.cpu_usage())
