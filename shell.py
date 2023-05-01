@@ -1,9 +1,11 @@
 # System shell commands to retrieve resource metrics
 
+import functools
 import subprocess
 
 # Helper functions
 
+@functools.cache
 def _distro_debian():
     cmd = "grep 'ID=debian' /etc/*release | wc -l"
     return int(_shellexec(cmd).rstrip())
@@ -11,6 +13,7 @@ def _distro_debian():
 def _shellexec(cmd):
     return subprocess.check_output(cmd, shell=True)
 
+@functools.cache
 def _cpu_cores():
     cores = _shellexec("grep -c ^processor /proc/cpuinfo").strip()
     return int(cores)
@@ -62,6 +65,7 @@ def ram_usage():
     cmd = "free -m | awk 'NR==2{printf \"%.2f\", $3/$2*100 }'"
     return float(_shellexec(cmd))
 
+@functools.lru_cache(maxsize=1200)
 def updates_available():
     if (_distro_debian()):
         debian = "apt list --upgradable 2>/dev/null | wc -l"
