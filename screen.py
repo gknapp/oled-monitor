@@ -2,6 +2,8 @@ from luma.core.interface.serial import i2c
 from luma.oled.device import sh1106
 from PIL import ImageFont
 
+# Assumes a 128x64 display using the SH1106 driver
+
 class dotdict(dict):
     """dot.notation access to dictionary attributes"""
     __getattr__ = dict.get

@@ -1,6 +1,4 @@
-"""
-System shell commands to retrieve resource metrics
-"""
+# System shell commands to retrieve resource metrics
 
 import subprocess
 
