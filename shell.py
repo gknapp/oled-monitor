@@ -65,7 +65,8 @@ def ram_usage():
     cmd = "free -m | awk 'NR==2{printf \"%.2f\", $3/$2*100 }'"
     return float(_shellexec(cmd))
 
-@functools.lru_cache(maxsize=1200)
+# maxsize = calls, loop time 1.5s, 1.5 x 200 calls = 300s (5 mins)
+@functools.lru_cache(maxsize=200)
 def updates_available():
     if (_distro_debian()):
         debian = "apt list --upgradable 2>/dev/null | wc -l"
