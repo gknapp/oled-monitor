@@ -13,10 +13,11 @@ Repo:
 from luma.core.render import canvas
 
 import argparse
-import time
-import sys
 import screen
 import shell
+import signal
+import sys
+import time
 
 parser = argparse.ArgumentParser(
     description="Show SBC resource statistics on an I2C OLED display.",
@@ -43,6 +44,12 @@ args = parser.parse_args()
 
 DEG = u'\N{DEGREE SIGN}'
 SCALE = "F" if args.tf else "C"
+
+def on_terminate(device):
+    def clear_screen():
+        device.clear()
+        sys.exit(0)
+    return clear_screen
 
 def thermals(text, offset):
     y = 29 + offset
@@ -80,6 +87,10 @@ def display_stats(device):
 if __name__ == "__main__":
     try:
         device = screen.get_device(args.sda, args.port)
+        clean_exit = on_terminate(device)
+
+        signal.signal(signal.SIGTERM, clean_exit)
+        signal.signal(signal.SIGABRT, clean_exit)
 
         if args.q is not True:
             print("Running ...")
@@ -88,4 +99,4 @@ if __name__ == "__main__":
             display_stats(device)
     except KeyboardInterrupt:
         # Exit cleanly on Ctrl + C without displaying an exception
-        sys.exit(0)
+        on_terminate(device)()
