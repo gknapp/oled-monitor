@@ -51,7 +51,7 @@ def hostname():
     return _shellexec("hostname").decode().rstrip()
 
 def ipaddr():
-    return _shellexec("hostname -I | cut -d\' \' -f1").decode()
+    return _shellexec("hostname -I | cut -d\' \' -f1").decode().strip() or "0.0.0.0"
 
 def mdns_enabled():
     cmd = "netstat --inet -lu | grep ':mdns' | wc -l"
