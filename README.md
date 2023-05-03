@@ -1,27 +1,34 @@
 # OLED System Stats
 
-Display system resource utilisation on a 1.3" I2C display.
+Display system resource utilisation on a 1.3" SH1106 I2C display.
 
-This script was built using an SH1106 display. It uses the Python 3 
-[luma-oled](https://github.com/rm-hull/luma.oled) library.
+This script uses the Python 3 [luma-oled](https://github.com/rm-hull/luma.oled) library.
 
 ![1.3" OLED display with oled-monitor running](https://imgur.com/5frUtRU.jpg)
 
-This script was originally written to provide resource stats at a glance and a hostname or IP.
+This script provides resource stats at a glance and advertises the hostname or IP.
 
-If multi-cast DNS is not detected, no `.local` host will be shown, instead only an IP.
+If multi-cast DNS is not detected, only the IP address will be displayed.
 
 ![1.3" OLED display with oled-monitor running](https://imgur.com/BATsBDw.jpg)
 
 ## Install
 
-1) `git clone git@github.com:gknapp/oled-monitor.git && cd oled-monitor`
-2) `virtualenv .env && source .env/bin/activate && pip install -r requirements.txt`
+1) `git clone git@github.com:gknapp/oled-monitor.git`
+2) `cd oled-monitor && ./install.sh`
+
+> If you run into issues with systemd not being able to run oled-monitor, check the log with:
+> `sudo journalctl -e`
 
 ## Run
 
-`chmod a+x oled-monitor.py`  
-`./oled-monitor.py`
+To run the script standalone without `install.sh`:
+
+```bash
+python3 -m venv .env && . .env/bin/activate
+pip install -r requirements.txt
+chmod u+x oled-monitor.py && ./oled-monitor.py
+```
 
 ## Options
 
@@ -37,3 +44,5 @@ optional arguments:
   -tf         Use Fahrenheit temperature prefix (F). Default is Celsuis (C)
   -q          Quiet mode
 ```
+
+This script could be extended to work other I2C displays supported by luma-oled.
