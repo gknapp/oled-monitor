@@ -12,6 +12,10 @@ if [ ! -d ".env" ]; then
     fi
 fi
 
+if [[ ! -x "./oled-monitor.py" ]]; then
+    chmod u+x,o-x ./oled-monitor.py
+fi
+
 if [ ! "$1" == "--install-service" ]; then
     read -p "Start OLED Monitor automatically on boot? [Y/n] " -n 1 -r
 
