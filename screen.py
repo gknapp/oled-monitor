@@ -1,6 +1,7 @@
 from luma.core.interface.serial import i2c
 from luma.oled.device import sh1106
 from PIL import ImageFont
+from os import path
 
 # Assumes a 128x64 display using the SH1106 driver
 
@@ -10,10 +11,13 @@ class dotdict(dict):
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
-bold   = ImageFont.truetype("fonts/pixeloperator-sc-bold.ttf", 15)
-# large  = ImageFont.truetype("fonts/pixeloperator.ttf", 15)
-medium = ImageFont.truetype("fonts/pixelmix.ttf", 8)
-small  = ImageFont.truetype("fonts/pixelade.ttf", 12)
+# Get this script's location
+pwd = path.dirname(path.realpath(__file__))
+
+bold   = ImageFont.truetype(pwd + "/fonts/pixeloperator-sc-bold.ttf", 15)
+# large  = ImageFont.truetype(pwd + "/fonts/pixeloperator.ttf", 15)
+medium = ImageFont.truetype(pwd + "/fonts/pixelmix.ttf", 8)
+small  = ImageFont.truetype(pwd + "/fonts/pixelade.ttf", 12)
 
 # Internal module helper functions
 
