@@ -100,3 +100,16 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         # Exit cleanly on Ctrl + C without displaying an exception
         on_terminate(device)()
+    except OSError as ex:
+        if (ex.errno == 6):
+            print("Display not found on port {} at address {}".format(
+                args.port, hex(args.sda)
+            ))
+            print("Check available ports with:\n")
+            print("  ls -l /dev/i2c-*\n")
+            print("Check device address with (eg. port 3):\n")
+            print("  sudo i2cdetect -y {}\n".format(args.port))
+        else:
+            print(ex.message if hasattr(ex, "message") else ex)
+
+        sys.exit(1)
